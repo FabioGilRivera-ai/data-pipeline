@@ -10,24 +10,26 @@ class PipelineRunnerTest {
 
     @Test
     void transformFiltersInactiveRecords() {
-        var input = List.of(
-            Map.of("id", 1, "name", "Alice", "score", 95, "active", true),
-            Map.of("id", 2, "name", "Bob", "score", 72, "active", false)
-        );
-        var result = runner.transform(new ArrayList<>(input));
+        List<Map<String, Object>> input = new ArrayList<>();
+        Map<String, Object> r1 = new HashMap<>();
+        r1.put("id", 1); r1.put("name", "Alice"); r1.put("score", 95); r1.put("active", true);
+        Map<String, Object> r2 = new HashMap<>();
+        r2.put("id", 2); r2.put("name", "Bob"); r2.put("score", 72); r2.put("active", false);
+        input.add(r1); input.add(r2);
+        List<Map<String, Object>> result = runner.transform(input);
         assertEquals(1, result.size());
         assertEquals("Alice", result.get(0).get("name"));
     }
 
     @Test
     void transformAssignsCorrectGrades() {
-        var input = List.of(
-            new HashMap<>(Map.of("id", 1, "score", 95, "active", true)),
-            new HashMap<>(Map.of("id", 2, "score", 82, "active", true)),
-            new HashMap<>(Map.of("id", 3, "score", 70, "active", true)),
-            new HashMap<>(Map.of("id", 4, "score", 50, "active", true))
-        );
-        var result = runner.transform(input);
+        List<Map<String, Object>> input = new ArrayList<>();
+        for (int[] pair : new int[][]{{1, 95}, {2, 82}, {3, 70}, {4, 50}}) {
+            Map<String, Object> row = new HashMap<>();
+            row.put("id", pair[0]); row.put("score", pair[1]); row.put("active", true);
+            input.add(row);
+        }
+        List<Map<String, Object>> result = runner.transform(input);
         assertEquals("A", result.get(0).get("grade"));
         assertEquals("B", result.get(1).get("grade"));
         assertEquals("C", result.get(2).get("grade"));
@@ -36,7 +38,7 @@ class PipelineRunnerTest {
 
     @Test
     void extractReturnsSampleDataWhenNoFile() throws Exception {
-        var result = runner.extract("non-existent-file.json");
+        List<Map<String, Object>> result = runner.extract("non-existent-file.json");
         assertFalse(result.isEmpty());
     }
 }
