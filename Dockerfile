@@ -6,6 +6,7 @@ COPY src ./src
 RUN mvn package -B --no-transfer-progress
 
 FROM eclipse-temurin:21-jre-alpine
+RUN apk update && apk upgrade --no-cache p11-kit p11-kit-trust
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 RUN mkdir -p /app/data
